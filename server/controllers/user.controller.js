@@ -40,6 +40,17 @@ exports.user_details = function(req, res) {
   });
 };
 
+exports.user_find_email = function(req, res) {
+  User.findOne({ email: req.params.email }, function(err, user) {
+    if (err) {
+      res.status(400);
+      res.send(err);
+      return;
+    }
+    res.send(user);
+  });
+};
+
 exports.user_update = function(req, res) {
   User.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
     err,
