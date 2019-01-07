@@ -3,8 +3,7 @@ const Hashtag = require("../models/hashtag.model");
 exports.hashtag_create = function(req, res) {
   let hashtag = new Hashtag({
     name: req.body.name,
-    quantity: req.body.quantity,
-    unitType: req.body.unitType
+    ƒ: req.body.messages_id
   });
 
   hashtag.save(function(err) {

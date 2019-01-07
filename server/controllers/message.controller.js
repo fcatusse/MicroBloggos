@@ -2,9 +2,8 @@ const Message = require("../models/message.model");
 
 exports.message_create = function(req, res) {
   let message = new Message({
-    name: req.body.name,
-    quantity: req.body.quantity,
-    unitType: req.body.unitType
+    user_id: req.body.user_id,
+    content: req.body.content
   });
 
   message.save(function(err) {
