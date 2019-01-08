@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
+import Message from "./Message";
 import Login from "./Login";
 import Signup from "./Signup";
 import EditUser from "./EditUser";
@@ -13,10 +14,6 @@ const Main = () => (
       <Route exact path="/edituser" component={EditUser} />
     </Switch>
   </main>
-);
-
-const Message = () => ( 
-  <h1>Welcome Home Page</h1>
 );
 
 export default Main;
