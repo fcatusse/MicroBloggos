@@ -1,9 +1,12 @@
 import React from "react";
 import Main from "./components/Main";
+import { CookiesProvider } from 'react-cookie';
 
 const App = () => (
   <div>
-    <Main />
+    <CookiesProvider>
+      <Main />
+    </CookiesProvider>
   </div>
 );
 
