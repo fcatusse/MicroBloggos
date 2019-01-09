@@ -4,6 +4,7 @@ import axios from 'axios';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import UsersList from './UsersList';
 
 class Message extends React.Component {
     static propTypes = {
@@ -20,7 +21,7 @@ class Message extends React.Component {
         };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         axios.post('http://localhost:8080/user/verifytoken', {token: this.props.cookies.get('token')} )
         .then( res => { 
             let id = res.data.id;
@@ -48,7 +49,8 @@ class Message extends React.Component {
     }
 
     render() {
-        const {username} = this.state;
+        const {username, id} = this.state;
+        console.log("depuis Message.js : ", {id});
         return (
             <div>
                 <h1>Homepage</h1>
@@ -56,7 +58,9 @@ class Message extends React.Component {
                 ? <p>Welcome {username} (<a href="#" onClick={this.logout}>logout</a>)</p>
                 : <Link to={'/login'}>Click here to login !</Link>
                 }
+                <UsersList user_id={id} />   
             </div>
+            
         );
     }
 }
