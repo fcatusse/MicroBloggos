@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 let MessageSchema = new Schema({
-  user_id: { type: Number, required: true },
+  user_id: { type: Object, required: true },
   content: { type: String, required: true },
   create_time: { type: Date, default: Date.now},
   uptdate_time: { type: Date, default: Date.now}

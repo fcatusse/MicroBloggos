@@ -87,23 +87,31 @@ exports.user_signup = function(req, res) {
           message: "Mail exists"
         });
       }
-      let salt = bcrypt.genSaltSync(128);
-      var hash = bcrypt.hashSync(req.body.password, salt);
-
-      let user = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: hash
+      User.findOne({ username: req.body.username })
+      .then(result => {
+        if (result != null) {
+          return res.status(409).json({
+            message: "Username exists"
+          });
+        }
+        let salt = bcrypt.genSaltSync(128);
+        var hash = bcrypt.hashSync(req.body.password, salt);
+        let user = new User({
+          username: req.body.username,
+          email: req.body.email,
+          password: hash
+        });
+        
+        user.save(function(err) {
+          if (err) {
+            res.status(400);
+            res.send(err);
+            return;
+          }
+          res.send({ message: "User Created successfully!", user });
+        });
       });
       
-      user.save(function(err) {
-        if (err) {
-          res.status(400);
-          res.send(err);
-          return;
-        }
-        res.send({ message: "User Created successfully!", user });
-      });
     });
 };
 

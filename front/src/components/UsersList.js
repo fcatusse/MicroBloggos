@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 //import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 class UsersList extends React.Component {
@@ -27,11 +28,11 @@ class UsersList extends React.Component {
                 <ul>
                 {
                     this.state.users.map(user => {
-                        let path = '/'+user._id; 
+                        let path = '/'+user.username; 
                         return (
-                            <div className="User" key={user._id}>
-                                <li><a href={path}>{user.username}</a></li>
-                            </div>                            
+                            <li key={user._id}>
+                                <Link to={path}>{user.username}</Link>
+                            </li>                     
                         )
                     })
                 }

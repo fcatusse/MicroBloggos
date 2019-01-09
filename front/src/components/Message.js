@@ -1,67 +1,49 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
-//import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
-import UsersList from './UsersList';
+import { Link } from 'react-router-dom';
+import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 class Message extends React.Component {
-    static propTypes = {
-        cookies: instanceOf(Cookies).isRequired
-    };
-
     constructor(props) {
         super(props);
-        //const { cookies } = props;
+
         this.state = {
-            id: "",
-            username: ""
+            content: "",
+            users: []
         };
     }
 
     componentWillMount() {
-        axios.post('http://localhost:8080/user/verifytoken', {token: this.props.cookies.get('token')} )
-        .then( res => { 
-            let id = res.data.id;
-            if (id != null) {
-                this.setState({
-                    id: id
-                });
-                axios.get('http://localhost:8080/user/'+id)
-                .then( res => {
-                    this.setState({
-                        username: res.data.username
-                    })
-                });
-            }
-        });
-    }
-
-    logout= event => {
-        event.preventDefault();
-        this.props.cookies.remove("token");
-        this.setState({
-            id: "",
-            username: ""
+        axios.get('http://localhost:8080/user/')
+        .then( res => {
+            this.setState({
+                users: res.data
+            })
         });
     }
 
     render() {
-        const {username, id} = this.state;
         return (
-            <div>
-                <h1>Homepage</h1>
-                { username 
-                ? <p>Welcome {username} (<a href="/" onClick={this.logout}>logout</a>)
-                <Link to={'/edituser'}>Click here to change your profil !</Link></p>
-                : <Link to={'/login'}>Click here to login !</Link>
+            <div className="Message">
+                <h3>Messages list</h3>
+                <ul>
+                {
+                    this.props.messages.map(message => {
+                        return (
+                            <li key={message._id}>
+                                {message.content}
+                                { message.user_id == this.props.user_id
+                                ? <span><button>Modifiy</button> <button>Delete</button></span>
+                                : <span></span>
+                                }
+                            </li>                     
+                        )
+                    })
                 }
-                <UsersList user_id={id} />   
+                </ul>
             </div>
-            
         );
     }
 }
 
-export default withCookies(Message); 
+export default Message;
