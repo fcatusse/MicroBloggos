@@ -1,8 +1,9 @@
 import React from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import bcrypt from 'bcrypt-nodejs';
+//import bcrypt from 'bcrypt-nodejs';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 class EditUser extends React.Component {
@@ -14,7 +15,7 @@ class EditUser extends React.Component {
     super(props);
 
     const { cookies } = props;
-    if (cookies.get('token') == undefined) {
+    if (cookies.get('token') === undefined) {
       this.props.history.push("/login");
     }
       this.state = {
@@ -31,7 +32,6 @@ class EditUser extends React.Component {
 		axios.post('http://localhost:8080/user/verifytoken', {token: this.props.cookies.get('token')} )
     .then( res => { 
       let id = res.data.id;
-      // console.log("la réponse : ", res.data.id);
       if (id == null) {
         this.props.history.push("/login");
       }
@@ -62,7 +62,7 @@ class EditUser extends React.Component {
   handleSubmit = event => {
     event.preventDefault();
 
-    if (this.state.password != this.state.confirm_password) {
+    if (this.state.password !== this.state.confirm_password) {
       this.setState({
         error: "Password doesn't match"
       });
@@ -70,13 +70,13 @@ class EditUser extends React.Component {
     }
 
     let body = {};
-    if (this.state.password == "") {
-      let body = {
+    if (this.state.password === "") {
+      body = {
         username: this.state.username,
         email: this.state.email
       }
     } else {
-      let body = {
+      body = {
         username: this.state.username,
         email: this.state.email,
         password: this.state.password
@@ -91,7 +91,8 @@ class EditUser extends React.Component {
 
   render() {
     return (
-      <div className="Signup">
+      <div className="EditUser">
+        <Link to={'/'}>Home</Link>
         <form onSubmit={this.handleSubmit}>
         <FormGroup controlId="username" bsSize="large">
             <ControlLabel>Username</ControlLabel>

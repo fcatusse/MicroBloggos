@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+//import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import UsersList from './UsersList';
 
 class Message extends React.Component {
@@ -13,8 +13,7 @@ class Message extends React.Component {
 
     constructor(props) {
         super(props);
-    
-        const { cookies } = props;
+        //const { cookies } = props;
         this.state = {
             id: "",
             username: ""
@@ -32,7 +31,7 @@ class Message extends React.Component {
                 axios.get('http://localhost:8080/user/'+id)
                 .then( res => {
                     this.setState({
-                    username: res.data.username
+                        username: res.data.username
                     })
                 });
             }
@@ -50,12 +49,12 @@ class Message extends React.Component {
 
     render() {
         const {username, id} = this.state;
-        console.log("depuis Message.js : ", {id});
         return (
             <div>
                 <h1>Homepage</h1>
                 { username 
-                ? <p>Welcome {username} (<a href="#" onClick={this.logout}>logout</a>)</p>
+                ? <p>Welcome {username} (<a href="/" onClick={this.logout}>logout</a>)
+                <Link to={'/edituser'}>Click here to change your profil !</Link></p>
                 : <Link to={'/login'}>Click here to login !</Link>
                 }
                 <UsersList user_id={id} />   

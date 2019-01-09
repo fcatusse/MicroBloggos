@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import bcrypt from 'bcrypt-nodejs';
+import { Link } from 'react-router-dom';
+//import bcrypt from 'bcrypt-nodejs';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
@@ -12,7 +13,6 @@ class Login extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       email: "",
       password: ""
@@ -31,7 +31,6 @@ class Login extends React.Component {
     this.setState({
       [event.target.id]: event.target.value
     });
-    console.log(this.state.email);
   }
 
   handleSubmit = event => {
@@ -42,7 +41,6 @@ class Login extends React.Component {
     }
     axios.post('http://localhost:8080/user/login', body)
 		.then(res => {
-      console.log(res.data);
       const { cookies } = this.props;
       cookies.set('token', res.data.token, { path: '/' });
       this.props.history.push("/");
@@ -79,6 +77,7 @@ class Login extends React.Component {
             Login
           </Button>
         </form>
+        <Link to={'/signup'}>Click here to sign up !</Link>
       </div>
     );
   }

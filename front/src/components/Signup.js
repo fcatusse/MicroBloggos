@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import bcrypt from 'bcrypt-nodejs';
+//import bcrypt from 'bcrypt-nodejs';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 class Signup extends React.Component {
@@ -35,7 +35,7 @@ class Signup extends React.Component {
   handleSubmit = event => {
     event.preventDefault();
 
-    if (this.state.password != this.state.confirm_password) {
+    if (this.state.password !== this.state.confirm_password) {
       this.setState({
         error: "Password doesn't match"
       });
