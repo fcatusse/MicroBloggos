@@ -22,7 +22,7 @@ exports.user_create = function(req, res) {
 };
 
 exports.users_list = function(req, res) {
-  User.find({}, function(err, users) {
+  User.find({},null,{ collation:{locale:"fr"},vsort:{username:1} }, function(err, users) {
     if (err) {
       res.status(400);
       res.send(err);

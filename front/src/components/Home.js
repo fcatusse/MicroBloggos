@@ -19,15 +19,22 @@ class Home extends React.Component {
         this.state = {
             id: "",
             username: "",
-            messages: []
+            messages: [],
+            users: []
         };
     }
 
-    componentWillMount() {
+    generateMessagesUsers() {
         axios.get('http://localhost:8080/message/')
         .then( res => {
             this.setState({
                 messages: res.data
+            })
+        });
+        axios.get('http://localhost:8080/user/')
+        .then( res => {
+            this.setState({
+                users: res.data
             })
         });
         axios.post('http://localhost:8080/user/verifytoken', {token: this.props.cookies.get('token')} )
@@ -45,6 +52,10 @@ class Home extends React.Component {
                 });
             }
         });
+    }
+
+    componentWillMount() {
+        this.generateMessagesUsers();
     }
 
     logout = event => {
@@ -85,7 +96,7 @@ class Home extends React.Component {
                 <div></div>
                 }
                 <div className="messages">
-                    <Message user_id={id} messages={this.state.messages}/>
+                    <Message user_id={id} messages={this.state.messages} users={this.state.users} />
                 </div> 
                 <div className="users">
                     <UsersList user_id={id} />

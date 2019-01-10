@@ -1,4 +1,8 @@
 const Message = require("../models/message.model");
+const User = require("../models/user.model");
+
+console.log("oui");
+
 
 exports.message_create = function(req, res) {
   let message = new Message({
@@ -17,6 +21,7 @@ exports.message_create = function(req, res) {
 };
 
 exports.messages_list = function(req, res) {
+
   Message.find({}, function(err, messages) {
     if (err) {
       res.status(400);

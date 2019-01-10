@@ -10,10 +10,16 @@ class MessageForm extends React.Component {
         this.state = {
             content: "",
         };
+        this.updateMessage = this.updateMessage.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     newMessage = (message) => {
         this.props.newMessageChange(message);            
+    }
+
+    updateMessage = (message) => {
+        this.props.editMessageChange(message);            
     }
 
     handleChange = event => {
@@ -21,21 +27,55 @@ class MessageForm extends React.Component {
           [event.target.id]: event.target.value
         });
       }
+
+      createMessage() {
+        let body = {
+            user_id: this.props.user_id,
+            content: this.state.content
+          }
+          axios.post('http://localhost:8080/message/create', body)
+          .then(res => {
+              this.newMessage(res.data.message);
+              this.setState({
+                  content: ""
+              });
+          });
+      }
+
+      updateMessage() {
+        console.log("ok");
+        let body = {
+            content: this.state.content
+          }
+          axios.put('http://localhost:8080/message/' + this.props.id + '/update', body)
+          .then(res => {
+              this.updateMessage(res.data.message);
+              this.setState({
+                  content: ""
+              });
+          });
+      }
     
       handleSubmit = event => {
         event.preventDefault();
-    
-        let body = {
-          user_id: this.props.user_id,
-          content: this.state.content
+        if (this.props.user_id) {
+            this.createMessage();
         }
-        axios.post('http://localhost:8080/message/create', body)
-        .then(res => {
-            this.newMessage(body);
-            this.setState({
-                content: ""
+        console.log(this.props.id);
+        if (this.props.id) {
+            console.log(this.props.id);
+            console.log("ok");
+            let body = {
+            content: this.state.content
+          }
+          axios.put('http://localhost:8080/message/' + this.props.id + '/update', body)
+          .then(res => {
+              this.updateMessage(res.data.message);
+              this.setState({
+                  content: ""
+              });
             });
-        });
+        }
       }
 
     validateForm() {
