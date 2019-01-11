@@ -1,8 +1,4 @@
 const Message = require("../models/message.model");
-const User = require("../models/user.model");
-
-console.log("oui");
-
 
 exports.message_create = function(req, res) {
   let message = new Message({
@@ -22,7 +18,7 @@ exports.message_create = function(req, res) {
 
 exports.messages_list = function(req, res) {
 
-  Message.find({}, function(err, messages) {
+  Message.find({}, null, { collation:{locale:"fr"}, sort:{create_time:-1} }, function(err, messages) {
     if (err) {
       res.status(400);
       res.send(err);
@@ -44,16 +40,20 @@ exports.message_details = function(req, res) {
 };
 
 exports.message_update = function(req, res) {
-  Message.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
+  let body = {
+    content: req.body.content,
+    update_time: new Date()
+  };
+  Message.findByIdAndUpdate(req.params.id, { $set: body },  function(
     err,
-    message
+    result
   ) {
     if (err) {
       res.status(400);
       res.send(err);
       return;
     }
-    res.send({ message: "Message Udpated successfully!", message });
+    res.send({ message: "Message Udpated successfully!", result });
   });
 };
 

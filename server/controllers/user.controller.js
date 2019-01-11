@@ -22,7 +22,7 @@ exports.user_create = function(req, res) {
 };
 
 exports.users_list = function(req, res) {
-  User.find({},null,{ collation:{locale:"fr"},vsort:{username:1} }, function(err, users) {
+  User.find({}, null, { collation:{locale:"fr"}, sort:{username:1} }, function(err, users) {
     if (err) {
       res.status(400);
       res.send(err);
@@ -158,10 +158,8 @@ exports.user_login = function(req, res) {
 
 exports.user_verifytoken = function(req, res) {
   let token = req.body.token;
-  console.log(token);
   jwt.verify(token, env_key.env.JWT_KEY, function(err, decoded) {
     if (err) {
-      console.log(err);
       return res.status(200).json({
         id: null
       });
@@ -171,4 +169,18 @@ exports.user_verifytoken = function(req, res) {
     });
   });
   
+};
+
+exports.user_subscribe = function(req, res) {
+  User.findByIdAndUpdate(req.params.id, { $push: {subscriptions_id: req.body.id } }, function(
+    err,
+    user
+  ) {
+    if (err) {
+      res.status(400);
+      res.send(err);
+      return;
+    }
+    res.send({ message: "Subscribe successfully!", user });
+  });
 };

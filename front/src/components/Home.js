@@ -9,19 +9,22 @@ import Message from './Message';
 import MessageForm from './MessageForm';
 
 class Home extends React.Component {
+    
     static propTypes = {
         cookies: instanceOf(Cookies).isRequired
     };
 
     constructor(props) {
         super(props);
-        
         this.state = {
             id: "",
             username: "",
             messages: [],
+            messages_users: [],
             users: []
         };
+        this.spliceMessage = this.spliceMessage.bind(this);
+        this.editMessageChange = this.editMessageChange.bind(this);
     }
 
     generateMessagesUsers() {
@@ -30,27 +33,52 @@ class Home extends React.Component {
             this.setState({
                 messages: res.data
             })
-        });
-        axios.get('http://localhost:8080/user/')
-        .then( res => {
-            this.setState({
-                users: res.data
-            })
-        });
-        axios.post('http://localhost:8080/user/verifytoken', {token: this.props.cookies.get('token')} )
-        .then( res => { 
-            let id = res.data.id;
-            if (id != null) {
+            axios.get('http://localhost:8080/user/')
+            .then( res => {
                 this.setState({
-                    id: id
+                    users: res.data
+                })
+                this.mergeMessagesUsers();
+                axios.post('http://localhost:8080/user/verifytoken', {token: this.props.cookies.get('token')} )
+                .then( res => { 
+                    let id = res.data.id;
+                    if (id != null) {
+                        this.setState({
+                            id: id
+                        });
+                        axios.get('http://localhost:8080/user/'+id)
+                        .then( res => {
+                            this.setState({
+                                username: res.data.username
+                            })
+                        });
+                    }
                 });
-                axios.get('http://localhost:8080/user/'+id)
-                .then( res => {
-                    this.setState({
-                        username: res.data.username
-                    })
-                });
-            }
+            });
+        });
+    }
+
+    mergeMessagesUsers() {
+        let messages_users = [];
+        this.state.messages.forEach(message => {
+            this.state.users.forEach(user => {
+                if (message.user_id === user._id) 
+                {
+                    let date = message.create_time;
+                    date = date.substring(8, 10)+'/'+date.substring(5, 7)+'/'+date.substring(0, 4)+
+                    ' - '+date.substring(11, 16);
+                    messages_users.push({
+                        id: message._id,
+                        content: message.content,
+                        username: user.username,
+                        create_time: date,
+                        user_id: user._id
+                    });
+                }
+            });
+        });
+        this.setState({
+            messages_users: messages_users
         });
     }
 
@@ -69,10 +97,38 @@ class Home extends React.Component {
 
     newMessage = (message) => {
         let messages = this.state.messages;
-        messages.push(message)
+        messages.splice(0, 0, message);
         this.setState({
             messages: messages
         });
+        this.mergeMessagesUsers();
+    }
+
+    editMessageChange(editMessage) {
+        let i = 0;
+        let messages = this.state.messages;
+        messages.forEach(message => {
+            if(message._id === editMessage._id) {
+                messages[i].content = editMessage.content;
+            }
+            i++;
+        });
+        this.mergeMessagesUsers();
+    }
+
+    spliceMessage(id) {
+        let i = 0;
+        this.state.messages_users.forEach(message_user => {
+            if (message_user.id === id) {
+                this.state.messages_users.splice(i, 1);
+                this.state.messages.splice(i, 1);
+            }
+        i++;
+        });
+        this.setState({
+            messages_users: this.state.messages_users,
+            messages: this.state.messages
+        })
     }
 
     render() {
@@ -87,16 +143,24 @@ class Home extends React.Component {
                 : <Link to={'/login'}>Click here to login !</Link>
                 }
                 </div>
-                { (id != "")
+                { (id !== "")
                 ?
                 <div className="messageForm">
-                    <MessageForm user_id={id} newMessageChange={this.newMessage}/>
+                    <MessageForm 
+                        user_id={id} 
+                        newMessageChange={this.newMessage}
+                    />
                 </div>
                 : 
                 <div></div>
                 }
                 <div className="messages">
-                    <Message user_id={id} messages={this.state.messages} users={this.state.users} />
+                    <Message 
+                        user_id={id} 
+                        messages_users={this.state.messages_users} 
+                        editMessageChange={this.editMessageChange}
+                        spliceMessage={this.spliceMessage} 
+                    />
                 </div> 
                 <div className="users">
                     <UsersList user_id={id} />

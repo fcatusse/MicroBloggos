@@ -7,7 +7,7 @@ let UserSchema = new Schema({
   password: { type: String, required: true },
   subscriptions_id: { type: Array, required: false },
   create_time: { type: Date, default: Date.now},
-  uptdate_time: { type: Date, default: Date.now}
+  update_time: { type: Date, default: Date.now}
 });
 
 module.exports = mongoose.model("User", UserSchema);
