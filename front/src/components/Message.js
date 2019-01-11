@@ -83,7 +83,8 @@ class Message extends React.Component {
         event.preventDefault();
         this.setState({
             edit_message: null
-        })
+        });
+        newMessageChange();
     }
 
 

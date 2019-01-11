@@ -15,12 +15,18 @@ class MessageForm extends React.Component {
     }
 
     newMessage = (message) => {
-        this.props.newMessageChange(message);            
+        // this.props.newMessageChange(message);            
     }
 
+    editMessage = (message) => {
+        this.props.editMessageChange(message);            
+    }
+
+    /*
     updateMessage = (message) => {
         this.props.editMessageChange(message);            
     }
+    */
 
     handleChange = event => {
         this.setState({
@@ -35,13 +41,14 @@ class MessageForm extends React.Component {
           }
           axios.post('http://localhost:8080/message/create', body)
           .then(res => {
-              this.newMessage(res.data.message);
+              this.editMessage(res.data.message);
               this.setState({
                   content: ""
               });
           });
       }
 
+      /*
       updateMessage() {
         console.log("ok");
         let body = {
@@ -55,25 +62,25 @@ class MessageForm extends React.Component {
               });
           });
       }
+      */
     
       handleSubmit = event => {
+        // console.log(this.props.user_id);
         event.preventDefault();
         if (this.props.user_id) {
             this.createMessage();
         }
-        console.log(this.props.id);
         if (this.props.id) {
-            console.log(this.props.id);
-            console.log("ok");
             let body = {
-            content: this.state.content
-          }
-          axios.put('http://localhost:8080/message/' + this.props.id + '/update', body)
-          .then(res => {
-              this.updateMessage(res.data.message);
-              this.setState({
-                  content: ""
-              });
+                content: this.state.content
+            }
+            console.log("this.props.id : ", this.props.id,"body : ",body);
+            axios.put('http://localhost:8080/message/' + this.props.id + '/update', body)
+            .then(res => {
+                this.newMessage(res.data.message);
+                this.setState({
+                    content: ""
+                });
             });
         }
       }
