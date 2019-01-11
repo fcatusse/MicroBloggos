@@ -1,16 +1,15 @@
 import React from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+//import { Link } from 'react-router-dom';
+//import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import MessageForm from "./MessageForm";
 
 class Message extends React.Component {
+
     constructor(props) {
         super(props);
-
         this.state = {
             content: "",
-            users: [],
             messages_users: [],
             edit_message: null
         };
@@ -19,43 +18,14 @@ class Message extends React.Component {
         this.editMessageChange = this.editMessageChange.bind(this);
     }
 
-    mergeMessagesUsers() {
-        let messages_users = [];
-        this.props.messages.map(message => {
-            this.props.users.map(user => {
-                if (message.user_id == user._id) 
-                {
-                    messages_users.push({
-                        id: message._id,
-                        content: message.content,
-                        username: user.username,
-                        create_time: message.create_time,
-                        user_id: user._id
-                    });
-                }
-            });
-        });
-        this.setState({
-            messages_users: messages_users
-        });
-    }
-
     componentWillReceiveProps() {
-        this.mergeMessagesUsers();
+        this.setState({
+            messages_users: this.props.messages_users
+        });
     }
 
     spliceMessage(id) {
-        let i = 0
-            let test = this.state.messages_users;
-            test.map(message_user => {
-                if (message_user.id == id) {
-                    test.splice(i, 1);
-                }
-                i++;
-            });
-            this.setState({
-                messages_users: test
-            })
+        this.props.spliceMessage(id);
     }
 
     deleteMessage(event) {
@@ -68,25 +38,19 @@ class Message extends React.Component {
     }
 
     editMessage(event) {
-        var id = [event.target.id];
-        console.log(id);
-                event.preventDefault();
-                var id = [event.target.id];
-                console.log(id);
-                this.setState({
-                    edit_message: id
-                });
-    }
-
-    
-    editMessageChange(event) {
         event.preventDefault();
+        var id = event.target.id;
+        this.setState({
+            edit_message: id
+        });
+    }
+    
+    editMessageChange(message) {
         this.setState({
             edit_message: null
-        });
-        newMessageChange();
+        })
+        this.props.editMessageChange(message);
     }
-
 
     render() {
         return (
@@ -94,18 +58,24 @@ class Message extends React.Component {
                 <h3>Messages list</h3>
                 <ul>
                 {
-                    this.state.messages_users.map(message_user => {
+                    this.props.messages_users.map(message_user => {
                         return (
                             <li key={message_user.id}>
-                                {message_user.content} <br /><i>(post by {message_user.username} at {message_user.create_time})</i>
-                                { message_user.user_id == this.props.user_id
+                                <br /><i>(post by {message_user.username} at {message_user.create_time})</i><br />
+                                { (this.state.edit_message === message_user.id)
+                                ? <MessageForm 
+                                    key={message_user.id}
+                                    id={message_user.id} 
+                                    content={message_user.content} 
+                                    editMessageChange={this.editMessageChange} 
+                                />
+                                : <span>{message_user.content} <br /></span>
+                                }
+                                { (message_user.user_id === this.props.user_id) && (this.state.edit_message !== message_user.id) 
                                 ? <span><button id={message_user.id} onClick={this.editMessage}>Modifiy</button> <button id={message_user.id} onClick={this.deleteMessage}>Delete</button></span>
                                 : <span></span>
                                 }
-                                { (this.state.edit_message == message_user.id)
-                                ? <MessageForm id={message_user.id} editMessageChange={this.editMessage} />
-                                : <span></span>
-                                }
+                                <br />
                             </li>                     
                         )
                     })

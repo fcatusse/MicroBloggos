@@ -11,7 +11,7 @@ router.delete("/:id/delete", user_controller.user_delete);
 
 router.post("/signup", user_controller.user_signup);
 router.post("/login", user_controller.user_login);
-
 router.post("/verifytoken", user_controller.user_verifytoken);
+router.put("/:id/subscribe", user_controller.user_subscribe);
 
 module.exports = router;

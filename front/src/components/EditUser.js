@@ -7,13 +7,13 @@ import { withCookies, Cookies } from 'react-cookie';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 class EditUser extends React.Component {
+  
   static propTypes = {
     cookies: instanceOf(Cookies).isRequired
   };
 
   constructor(props) {
     super(props);
-
     const { cookies } = props;
     if (cookies.get('token') === undefined) {
       this.props.history.push("/login");
