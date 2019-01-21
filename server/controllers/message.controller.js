@@ -1,17 +1,25 @@
 const Message = require("../models/message.model");
+const HashtagController = require("./hashtag.controller");
 
 exports.message_create = function(req, res) {
   let message = new Message({
     user_id: req.body.user_id,
     content: req.body.content
   });
-
-  message.save(function(err) {
+  message.save(function(err, message) {
     if (err) {
       res.status(400);
       res.send(err);
       return;
     }
+    let hashtags = req.body.hashtags;
+    hashtags.forEach(hashtag => {
+      if (hashtag._id === null) {
+        HashtagController.hashtag_create(hashtag.name, message._id);
+      } else {
+        HashtagController.hashtag_update(hashtag._id, message._id, 'push');
+      }
+    });
     res.send({ message: "Message Created successfully!", message });
   });
 };
@@ -53,6 +61,18 @@ exports.message_update = function(req, res) {
       res.send(err);
       return;
     }
+    let hashtags = req.body.hashtags;
+    hashtags.forEach(hashtag => {
+      if (hashtag._id === null) {
+        HashtagController.hashtag_create(hashtag.name, result._id);
+      } else {
+        if (hashtag.action === 'add') {
+          HashtagController.hashtag_update(hashtag._id, result._id, 'push');
+        } else {
+          HashtagController.hashtag_update(hashtag._id, result._id, 'pull');
+        }
+      }
+    });
     res.send({ message: "Message Udpated successfully!", result });
   });
 };

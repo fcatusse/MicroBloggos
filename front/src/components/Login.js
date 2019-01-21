@@ -15,7 +15,7 @@ class Login extends React.Component {
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
     };
   }
 
@@ -48,6 +48,9 @@ class Login extends React.Component {
   }
 
   render() {
+    if (this.props.cookies.get('token')) {
+      this.props.history.push("/");
+    }
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>

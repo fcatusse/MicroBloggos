@@ -68,7 +68,7 @@ exports.user_update = function(req, res) {
   });
 };
 
-exports.user_delete = function(req, res) {
+/*exports.user_delete = function(req, res) {
   User.findByIdAndRemove(req.params.id, function(err, result) {
     if (err) {
       res.status(400);
@@ -77,7 +77,7 @@ exports.user_delete = function(req, res) {
     }
     res.send({ message: "User Deleted successfully!", result });
   });
-};
+};*/
 
 exports.user_signup = function(req, res) {
   User.findOne({ email: req.body.email })
@@ -136,7 +136,7 @@ exports.user_login = function(req, res) {
             email: user.email
           }, env_key.env.JWT_KEY, 
             {
-              expiresIn: "1h"
+              expiresIn: "30d"
             }
           );
           return res.status(200).json({
@@ -181,6 +181,26 @@ exports.user_subscribe = function(req, res) {
       res.send(err);
       return;
     }
+    user.subscriptions_id.push(req.body.id)
     res.send({ message: "Subscribe successfully!", user });
+  });
+};
+
+exports.user_unsubscribe = function(req, res) {
+  User.findByIdAndUpdate(req.params.id, { $pull: {subscriptions_id: req.body.id } }, function(
+    err,
+    user
+  ) {
+    if (err) {
+      res.status(400);
+      res.send(err);
+      return;
+    }
+    user.subscriptions_id.forEach((subscription_id, index) => {
+      if (subscription_id === req.body.id) {
+          user.subscriptions_id.splice(index, 1);
+      }
+    });
+    res.send({ message: "Unsubscribe successfully!", user });
   });
 };

@@ -84,7 +84,6 @@ class EditUser extends React.Component {
     }
     axios.put('http://localhost:8080/user/' + this.state.id + '/update', body)
 		.then(res => {
-      console.log("Redirect");
       this.props.history.push("/login");
 		});
   }
@@ -133,7 +132,7 @@ class EditUser extends React.Component {
             disabled={!this.validateForm()}
             type="submit"
           >
-            Login
+            Update
           </Button>
         </form>
       </div>

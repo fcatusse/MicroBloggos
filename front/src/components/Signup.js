@@ -2,8 +2,14 @@ import React from 'react';
 import axios from 'axios';
 //import bcrypt from 'bcrypt-nodejs';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import { withCookies, Cookies } from 'react-cookie';
+import { instanceOf } from 'prop-types';
 
 class Signup extends React.Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+  
   constructor(props) {
     super(props);
 
@@ -49,12 +55,14 @@ class Signup extends React.Component {
     }
     axios.post('http://localhost:8080/user/signup', body)
 		.then(res => {
-      console.log("Redirect");
       this.props.history.push("/login");
 		});
   }
 
   render() {
+    if (this.props.cookies.get('token')) {
+      this.props.history.push("/");
+    }
     return (
       <div className="Signup">
         <p>{this.state.success}</p>
@@ -106,4 +114,4 @@ class Signup extends React.Component {
   }
 }
 
-export default (Signup);
+export default withCookies(Signup);

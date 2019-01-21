@@ -10,10 +10,12 @@ class MessageForm extends React.Component {
         if (this.props.content === undefined) {
             this.state = {
                 content: "",
+                old_content: ""
             };
         } else {
             this.state = {
                 content: this.props.content,
+                old_content: this.props.content
             };
         }
         this.updateMessage = this.updateMessage.bind(this);
@@ -34,10 +36,72 @@ class MessageForm extends React.Component {
         });
       }
 
+    checkHashtags(content, old_content = "") {
+        let regex = /(#[a-zA-Z0-9_-]+)/g;
+        let hashtags = content.match(regex);
+        if (hashtags === null) {
+            hashtags = [];
+        }
+        let old_hashtags = old_content.match(regex);
+        if (old_hashtags === null) {
+            old_hashtags = [];
+        }
+        let result = [];
+        hashtags.forEach(newHashtag => {
+            newHashtag = newHashtag.substring(1);
+            let addTag = true;
+            old_hashtags.forEach(oldHashtag => {
+                oldHashtag = oldHashtag.substring(1);
+                if (newHashtag === oldHashtag) {
+                    addTag = false;
+                }
+            }); 
+            if (addTag) {
+                let id = null;
+                this.props.hashtags.forEach(hashtag => {
+                    if (newHashtag === hashtag.name) {
+                        id = String(hashtag._id);
+                    }
+                });
+                result.splice(0, 0, {
+                    name: newHashtag,
+                    _id: id,
+                    action: 'add'
+                });
+            }            
+        });
+        old_hashtags.forEach(oldHashtag => {
+            oldHashtag = oldHashtag.substring(1);
+            let deleteTag = true;
+            hashtags.forEach(newHashtag => {
+                newHashtag = newHashtag.substring(1);
+                if (newHashtag === oldHashtag) {
+                    deleteTag = false;
+                }
+            });  
+            if (deleteTag) {
+                let id = null;
+                this.props.hashtags.forEach(hashtag => {
+                    if (oldHashtag === hashtag.name) {
+                        id = String(hashtag._id);
+                    }
+                });
+                result.splice(0, 0, {
+                    name: oldHashtag,
+                    _id: id,
+                    action: 'delete'
+                });
+            }
+        });
+        return result;
+    }
+
     createMessage() {
+        let hashtags = this.checkHashtags(this.state.content);
         let body = {
             user_id: this.props.user_id,
-            content: this.state.content
+            content: this.state.content,
+            hashtags: hashtags
         }
         axios.post('http://localhost:8080/message/create', body)
         .then(res => {
@@ -48,24 +112,31 @@ class MessageForm extends React.Component {
         });
     }
     
+    editMessage() {
+        let hashtags = this.checkHashtags(this.state.content, this.state.old_content);
+        let body = {
+            content: this.state.content,
+            hashtags: hashtags
+        }
+        axios.put('http://localhost:8080/message/' + this.props.id + '/update', body)
+        .then(res => {
+            let data = res.data.result;
+            data.content = body.content;
+            this.updateMessage(data);
+            this.setState({
+                content: "",
+                old_content: ""
+            });
+        });
+    }
+
     handleSubmit = event => {
         event.preventDefault();
         if (this.props.user_id) {
             this.createMessage();
         }
         if (this.props.id) {
-            let body = {
-                content: this.state.content
-            }
-            axios.put('http://localhost:8080/message/' + this.props.id + '/update', body)
-            .then(res => {
-                let data = res.data.result;
-                data.content = body.content;
-                this.updateMessage(data);
-                this.setState({
-                    content: ""
-                });
-            });
+            this.editMessage();
         }
     }
 
